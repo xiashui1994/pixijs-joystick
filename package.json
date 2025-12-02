@@ -2,7 +2,6 @@
   "name": "pixijs-joystick",
   "type": "module",
   "version": "1.0.0",
-  "private": true,
   "description": "A virtual joystick component based on PixiJS v8, supporting both touch and mouse interactions",
   "author": "xiashui",
   "license": "MIT",
