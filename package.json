@@ -1,19 +1,19 @@
 {
-  "name": "vite-lib-template",
+  "name": "pixijs-joystick",
   "type": "module",
   "version": "1.0.0",
   "private": true,
-  "description": "vite-lib-template",
+  "description": "A virtual joystick component based on PixiJS v8, supporting both touch and mouse interactions",
   "author": "xiashui",
   "license": "MIT",
   "exports": {
-    "types": "./index.d.ts",
-    "import": "./dist/counter.js",
-    "require": "./dist/counter.umd.cjs"
+    "types": "./dist/index.d.ts",
+    "import": "./dist/joystick.js",
+    "require": "./dist/joystick.umd.cjs"
   },
-  "main": "./dist/counter.umd.cjs",
-  "module": "./dist/counter.js",
-  "types": "./index.d.ts",
+  "main": "./dist/joystick.umd.cjs",
+  "module": "./dist/joystick.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "index.d.ts"
@@ -25,8 +25,12 @@
     "prepare": "husky install",
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:example": "vite build --config vite.config.example.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "pixi.js": "^8.14.3"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",
