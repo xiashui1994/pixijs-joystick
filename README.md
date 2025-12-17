@@ -1,6 +1,6 @@
 # PixiJS Joystick
 
-A virtual joystick component based on PixiJS v8, supporting both touch and mouse interactions.
+A virtual joystick component based on PixiJS v7+, supporting both touch and mouse interactions.
 
 ## Features
 
@@ -8,7 +8,7 @@ A virtual joystick component based on PixiJS v8, supporting both touch and mouse
 - 📐 8-directional detection (up, down, left, right, and four diagonal directions)
 - 💪 Real-time angle and power feedback
 - 🎨 Customizable appearance (supports sprites or graphics)
-- 📦 Built with PixiJS v8 latest API
+- 📦 Compatible with PixiJS v7.4.3+
 - 🔧 TypeScript support
 
 ## Installation
@@ -25,10 +25,9 @@ npm install
 import * as PIXI from 'pixi.js'
 import { Joystick } from './lib/main'
 
-const app = new PIXI.Application()
-await app.init({
-  canvas: document.getElementById('canvas') as HTMLCanvasElement,
-  background: 0xFFFFFF,
+const app = new PIXI.Application({
+  view: document.getElementById('canvas') as HTMLCanvasElement,
+  backgroundColor: 0xFFFFFF,
   resizeTo: window,
 })
 

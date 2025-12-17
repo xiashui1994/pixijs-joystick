@@ -10,15 +10,14 @@ async function initialize() {
     { alias: 'inner', src: joystickHandlePng },
   ])
 
-  const app = new PIXI.Application()
-  await app.init({
-    canvas: document.getElementById('canvas') as HTMLCanvasElement,
-    background: 0xFFFFFF,
+  const app = new PIXI.Application({
+    view: document.getElementById('canvas') as HTMLCanvasElement,
+    backgroundColor: 0xFFFFFF,
     resizeTo: window,
   })
 
-  const leftText = new PIXI.Text({ text: '[left data]' })
-  const rightText = new PIXI.Text({ text: '[right data]' })
+  const leftText = new PIXI.Text('[left data]')
+  const rightText = new PIXI.Text('[right data]')
   const leftJoystick = new Joystick({
     outer: PIXI.Sprite.from('outer'),
     inner: PIXI.Sprite.from('inner'),
@@ -46,12 +45,9 @@ async function initialize() {
     leftJoystick.position.set(leftJoystick.width, window.innerHeight - leftJoystick.height)
     rightJoystick.position.set(window.innerWidth - rightJoystick.width, window.innerHeight - rightJoystick.height)
     app.renderer.resize(window.innerWidth, window.innerHeight)
-    app.resize()
   }
   resize()
   window.addEventListener('resize', resize)
-
-  // app.start() // Not needed usually if ticker is auto started, but can keep if needed. v8 starts automatically.
 }
 
 initialize()

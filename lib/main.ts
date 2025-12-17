@@ -41,21 +41,28 @@ export class Joystick extends PIXI.Container {
   constructor(opts: JoystickSettings) {
     super()
 
-    this.settings = Object.assign({
-      outerScale: { x: 1, y: 1 },
-      innerScale: { x: 1, y: 1 },
-    }, opts)
+    this.settings = Object.assign(
+      {
+        outerScale: { x: 1, y: 1 },
+        innerScale: { x: 1, y: 1 },
+      },
+      opts,
+    )
 
     if (!this.settings.outer) {
       const outer = new PIXI.Graphics()
-      outer.circle(0, 0, 60).fill(0x000000)
+      outer.beginFill(0x000000)
+      outer.drawCircle(0, 0, 60)
+      outer.endFill()
       outer.alpha = 0.5
       this.settings.outer = outer
     }
 
     if (!this.settings.inner) {
       const inner = new PIXI.Graphics()
-      inner.circle(0, 0, 35).fill(0x000000)
+      inner.beginFill(0x000000)
+      inner.drawCircle(0, 0, 35)
+      inner.endFill()
       inner.alpha = this.innerAlphaStandby
       this.settings.inner = inner
     }
@@ -70,15 +77,16 @@ export class Joystick extends PIXI.Container {
     this.outer.scale.set(this.settings.outerScale!.x, this.settings.outerScale!.y)
     this.inner.scale.set(this.settings.innerScale!.x, this.settings.innerScale!.y)
 
-    if ('anchor' in this.outer)
+    if ('anchor' in this.outer) {
       this.outer.anchor.set(0.5)
-    if ('anchor' in this.inner)
+    }
+    if ('anchor' in this.inner) {
       this.inner.anchor.set(0.5)
+    }
 
     this.addChild(this.outer)
     this.addChild(this.inner)
 
-    // this.outerRadius = this.containerJoystick.width / 2;
     this.outerRadius = this.width / 2.5
     this.innerRadius = this.inner.width / 2
 
@@ -88,9 +96,9 @@ export class Joystick extends PIXI.Container {
   protected bindEvents() {
     this.eventMode = 'static'
 
-    let dragging = false
+    let dragging: boolean = false
+    let power: number
     let startPosition: PIXI.Point
-    let power = 0
 
     const onDragStart = (event: PIXI.FederatedPointerEvent) => {
       startPosition = this.toLocal(event.global)
@@ -101,9 +109,10 @@ export class Joystick extends PIXI.Container {
       this.settings.onStart?.()
     }
 
-    const onDragEnd = () => {
-      if (dragging === false)
+    const onDragEnd = (_event: PIXI.FederatedPointerEvent) => {
+      if (dragging === false) {
         return
+      }
 
       this.inner.position.set(0, 0)
 
@@ -114,8 +123,9 @@ export class Joystick extends PIXI.Container {
     }
 
     const onDragMove = (event: PIXI.FederatedPointerEvent) => {
-      if (dragging === false)
+      if (dragging === false) {
         return
+      }
 
       const newPosition = this.toLocal(event.global)
 
@@ -125,8 +135,9 @@ export class Joystick extends PIXI.Container {
       const centerPoint = new PIXI.Point(0, 0)
       let angle = 0
 
-      if (sideX === 0 && sideY === 0)
+      if (sideX === 0 && sideY === 0) {
         return
+      }
 
       /**
        * x:   -1 <-> 1
@@ -135,7 +146,7 @@ export class Joystick extends PIXI.Container {
        *          ^
        *          |
        *     180  |  90
-       *    ------------> X
+       *    -----------> X
        *     270  |  360
        *          |
        *          |
@@ -145,7 +156,7 @@ export class Joystick extends PIXI.Container {
 
       if (sideX === 0) {
         if (sideY > 0) {
-          centerPoint.set(0, (sideY > this.outerRadius) ? this.outerRadius : sideY)
+          centerPoint.set(0, sideY > this.outerRadius ? this.outerRadius : sideY)
           angle = 270
           direction = Direction.BOTTOM
         }
@@ -162,7 +173,7 @@ export class Joystick extends PIXI.Container {
 
       if (sideY === 0) {
         if (sideX > 0) {
-          centerPoint.set((Math.abs(sideX) > this.outerRadius ? this.outerRadius : Math.abs(sideX)), 0)
+          centerPoint.set(Math.abs(sideX) > this.outerRadius ? this.outerRadius : Math.abs(sideX), 0)
           angle = 0
           direction = Direction.LEFT
         }
@@ -180,7 +191,7 @@ export class Joystick extends PIXI.Container {
 
       const tanVal = Math.abs(sideY / sideX)
       const radian = Math.atan(tanVal)
-      angle = radian * 180 / Math.PI
+      angle = (radian * 180) / Math.PI
 
       let centerX = 0
       let centerY = 0
@@ -228,7 +239,7 @@ export class Joystick extends PIXI.Container {
     this.on('pointerdown', onDragStart)
       .on('pointerup', onDragEnd)
       .on('pointerupoutside', onDragEnd)
-      .on('pointermove', onDragMove)
+      .on('globalpointermove', onDragMove)
   }
 
   protected getPower(centerPoint: PIXI.Point) {
@@ -238,26 +249,26 @@ export class Joystick extends PIXI.Container {
   }
 
   protected getDirection(center: PIXI.Point) {
-    const rad = Math.atan2(center.y, center.x)// [-PI, PI]
+    const rad = Math.atan2(center.y, center.x) // [-PI, PI]
     if ((rad >= -Math.PI / 8 && rad < 0) || (rad >= 0 && rad < Math.PI / 8)) {
       return Direction.RIGHT
     }
-    else if (rad >= Math.PI / 8 && rad < 3 * Math.PI / 8) {
+    else if (rad >= Math.PI / 8 && rad < (3 * Math.PI) / 8) {
       return Direction.BOTTOM_RIGHT
     }
-    else if (rad >= 3 * Math.PI / 8 && rad < 5 * Math.PI / 8) {
+    else if (rad >= (3 * Math.PI) / 8 && rad < (5 * Math.PI) / 8) {
       return Direction.BOTTOM
     }
-    else if (rad >= 5 * Math.PI / 8 && rad < 7 * Math.PI / 8) {
+    else if (rad >= (5 * Math.PI) / 8 && rad < (7 * Math.PI) / 8) {
       return Direction.BOTTOM_LEFT
     }
-    else if ((rad >= 7 * Math.PI / 8 && rad < Math.PI) || (rad >= -Math.PI && rad < -7 * Math.PI / 8)) {
+    else if ((rad >= (7 * Math.PI) / 8 && rad < Math.PI) || (rad >= -Math.PI && rad < (-7 * Math.PI) / 8)) {
       return Direction.LEFT
     }
-    else if (rad >= -7 * Math.PI / 8 && rad < -5 * Math.PI / 8) {
+    else if (rad >= (-7 * Math.PI) / 8 && rad < (-5 * Math.PI) / 8) {
       return Direction.TOP_LEFT
     }
-    else if (rad >= -5 * Math.PI / 8 && rad < -3 * Math.PI / 8) {
+    else if (rad >= (-5 * Math.PI) / 8 && rad < (-3 * Math.PI) / 8) {
       return Direction.TOP
     }
     else {
