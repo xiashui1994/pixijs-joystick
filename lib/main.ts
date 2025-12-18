@@ -99,8 +99,13 @@ export class Joystick extends PIXI.Container {
     let dragging: boolean = false
     let power: number
     let startPosition: PIXI.Point
+    let activePointerId: number | null = null
 
     const onDragStart = (event: PIXI.FederatedPointerEvent) => {
+      if (activePointerId !== null)
+        return
+
+      activePointerId = event.pointerId
       startPosition = this.toLocal(event.global)
 
       dragging = true
@@ -109,7 +114,10 @@ export class Joystick extends PIXI.Container {
       this.settings.onStart?.()
     }
 
-    const onDragEnd = (_event: PIXI.FederatedPointerEvent) => {
+    const onDragEnd = (event: PIXI.FederatedPointerEvent) => {
+      if (event.pointerId !== activePointerId)
+        return
+
       if (dragging === false) {
         return
       }
@@ -118,11 +126,15 @@ export class Joystick extends PIXI.Container {
 
       dragging = false
       this.inner.alpha = this.innerAlphaStandby
+      activePointerId = null
 
       this.settings.onEnd?.()
     }
 
     const onDragMove = (event: PIXI.FederatedPointerEvent) => {
+      if (event.pointerId !== activePointerId)
+        return
+
       if (dragging === false) {
         return
       }
